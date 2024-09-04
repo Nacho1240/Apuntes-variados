@@ -1,0 +1,1 @@
+Media Aritmetica $$\vec{X} = \frac{1}{n}\sum{xi·fi}$$

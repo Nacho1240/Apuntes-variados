@@ -1,0 +1,1 @@
+Html no es un Lenguaje de programación, es principalmente el esqueleto de una pagina web, todo lo principal en cuanto a diseño es propio de Css y de javascript, "se puede ejecutar con Vs Code",  <"a"> se encarga de redirigirse a una pagina distinta, <"button"> te crea un boton, los atributos son importantes y solo funcionan con sus respectivos métodos 
