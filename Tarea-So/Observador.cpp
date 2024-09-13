@@ -9,6 +9,7 @@
 #include <cstdlib>
 #include <fcntl.h>
 #include <sys/stat.h>
+#include <sys/wait.h>
 
 
 
@@ -20,6 +21,7 @@ using namespace std;
 void eliminar_jugador(int jugador_eliminado, int total_jugadores) {
     // Simular la función de eliminación de un jugador
     cout << "Jugador " << jugador_eliminado << " ha sido eliminado." << endl;
+    execl("./Amurra_y_reclama","",NULL);
 }
 
 int contar_votos(int votos[], int total_jugadores) {
@@ -116,21 +118,17 @@ int main() {
     int jugadores_activos = total_jugadores;
     int votos[total_jugadores];
 
-    // Iniciar las rondas del juego
     while (jugadores_activos > 1) {
         cout << "Iniciando nueva ronda con " << jugadores_activos << " jugadores." << endl;
 
-        // Recibir los votos de los jugadores
+
         recibir_votos(jugadores_activos, votos);
 
-        // Contar los votos y determinar el jugador eliminado
         int jugador_eliminado = contar_votos(votos, jugadores_activos);
         eliminar_jugador(jugador_eliminado, jugadores_activos);
 
-        // Enviar la respuesta a los jugadores
         enviar_respuestas(jugadores_activos, jugador_eliminado);
 
-        // Reducir el número de jugadores activos
         jugadores_activos--;
     }
 
@@ -141,7 +139,6 @@ int main() {
 
     cout << "El jugador ganador ha sido determinado." << endl;
 
-    // Eliminar los pipes
     unlink(PIPE_VOTO);
     unlink(PIPE_RESPUESTA);
 
