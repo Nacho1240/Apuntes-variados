@@ -108,8 +108,7 @@ int main() {
             exit(EXIT_FAILURE);
         } else if (pid == 0) {
             // Proceso hijo: ejecutar el programa del jugador
-            execl("./Jugadores", "", NULL);  // Ejecuta el archivo Jugador.cpp
-            cerr << "Error al ejecutar el jugador" << endl;
+    execl("./Jugadores", "./Jugadores", to_string(i).c_str(), to_string(total_jugadores).c_str(), NULL);            cerr << "Error al ejecutar el jugador" << endl;
             exit(EXIT_FAILURE);
         }
     }
