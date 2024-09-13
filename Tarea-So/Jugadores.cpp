@@ -1,68 +1,53 @@
 #include <stdio.h>
 #include <unistd.h>
 #include <sys/types.h>
-#include <stdlib.h>
-#include <string>
-#include <iostream>
-#include <sstream>
-#include <string.h>
 #include <cstdlib>
+#include <ctime>
 #include <fcntl.h>
+#include <iostream>
+#include <string.h>
 
-
-
-#define PIPE_voto "/tmp/voto_pipe"
-
-#define PIPe_respuesta "/tmp/respuesta_pipe"
+#define PIPE_VOTO "/tmp/voto_pipe"
+#define PIPE_RESPUESTA "/tmp/respuesta_pipe"
 
 using namespace std;
 
-void Silla(int jugador_id, int Cantidad_jugadores){
-    cout<<"Ejecutando Test 1"<<endl;
-    sleep(rand()%7+1);
+void Silla(int jugador_id, int total_jugadores) {
+    cout << "Jugador " << jugador_id << " está moviéndose." << endl;
+    sleep(rand() % 7 + 1);  // Simula el tiempo de la música
 
+    // Generar un voto aleatorio por otro jugador (evitar auto-voto)
+    int voto = -1;
+    while (voto == jugador_id) {
+        voto = rand() % total_jugadores;
+    }
 
-
-int voto = -1;
-while (voto == jugador_id){
-    voto = rand()%Cantidad_jugadores;
-}
-
-
-
-int fd_voto = open(PIPE_voto, O_WRONLY);
+    // Enviar el voto al observador a través del pipe
+    int fd_voto = open(PIPE_VOTO, O_WRONLY);
     if (fd_voto == -1) {
         cout << "Error al abrir el pipe para enviar el voto" << endl;
         exit(EXIT_FAILURE);
     }
 
-
-//manejo y envio de votos
-char mensaje_voto[256];
-
-    snprintf(mensaje_voto, sizeof(mensaje_voto), "Jugador %d vota por Jugador %d", jugador_id, voto);    
-    write(fd_voto, mensaje_voto, strlen(mensaje_voto) + 1); 
+    // Enviar el voto
+    char mensaje_voto[256];
+    snprintf(mensaje_voto, sizeof(mensaje_voto), "Jugador %d vota por Jugador %d", jugador_id, voto);
+    write(fd_voto, mensaje_voto, strlen(mensaje_voto) + 1);
     close(fd_voto);
 
-//recepcion de votos del observador
- int fd_respuestas = open(PIPe_respuesta, O_RDONLY);
-    cout<<"Test 2"<<endl;
-
-    if (fd_respuestas == -1) {
+    // Recibir la respuesta del observador
+    int fd_respuesta = open(PIPE_RESPUESTA, O_RDONLY);
+    if (fd_respuesta == -1) {
         cout << "Error al abrir el pipe para recibir la respuesta" << endl;
         exit(EXIT_FAILURE);
     }
 
-char respuesta[256];
-
-    read(fd_respuestas, respuesta, sizeof(respuesta)); 
-    cout<<"Test 3"<<endl;
+    char respuesta[256];
+    read(fd_respuesta, respuesta, sizeof(respuesta));
     cout << "Jugador " << jugador_id << " recibió la respuesta: " << respuesta << endl;
-    close(fd_respuestas);
+    close(fd_respuesta);
 
-
-
-
+    // Evaluar si fue eliminado o no
     if (strcmp(respuesta, "eliminado") == 0) {
         cout << "Jugador " << jugador_id << " ha sido eliminado del juego." << endl;
     } else {
@@ -70,40 +55,19 @@ char respuesta[256];
     }
 }
 
+int main(int argc, char* argv[]) {
+    srand(time(0));
 
-int main() {
-    srand(time(0)); 
-
-    
-    int total_jugadores;
-
-
-
-    cout << "Ingrese la cantidad de jugadores: ";
-    cin >> total_jugadores;
-
-    if (total_jugadores < 2) {
-
-        cerr << "Debe haber al menos 2 jugadores para jugar." << endl;
+    if (argc != 3) {
+        cerr << "Uso: " << argv[0] << " <jugador_id> <total_jugadores>" << endl;
         return 1;
-
     }
 
- 
-    int jugador_id = rand() % total_jugadores;
+    int jugador_id = atoi(argv[1]);       // ID del jugador proporcionado por el observador
+    int total_jugadores = atoi(argv[2]);  // Total de jugadores proporcionado por el observador
 
-    
+    // Iniciar el juego para este jugador
     Silla(jugador_id, total_jugadores);
 
     return 0;
 }
-
-
-
-
-
-
-
-
-   
-

@@ -89,7 +89,7 @@ int main() {
     // Solicitar la cantidad de jugadores
     int total_jugadores;
     cout << "Ingrese la cantidad de jugadores: ";
-    cin >> total_jugadores;
+    total_jugadores = 4;
 
     if (total_jugadores < 2) {
         cerr << "Debe haber al menos 2 jugadores para jugar." << endl;
@@ -108,7 +108,7 @@ int main() {
             exit(EXIT_FAILURE);
         } else if (pid == 0) {
             // Proceso hijo: ejecutar el programa del jugador
-            execl("./jugador", "./jugador", NULL);  // Ejecuta el archivo Jugador.cpp
+            execl("./Jugadores", "", NULL);  // Ejecuta el archivo Jugador.cpp
             cerr << "Error al ejecutar el jugador" << endl;
             exit(EXIT_FAILURE);
         }
