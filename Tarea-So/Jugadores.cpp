@@ -7,36 +7,50 @@
 #include <iostream>
 #include <string.h>
 
-#define PIPE_VOTO "/tmp/voto_pipe"
-#define PIPE_RESPUESTA "/tmp/respuesta_pipe"
+
 
 using namespace std;
 
 void Silla(int jugador_id, int total_jugadores) {
+
+    cout << "Jugador " << jugador_id << " ha tomado asiento." << endl;
+    sleep(2);
+    string PIPE_VOTO = "voto_pipe" + to_string(jugador_id);
+    string PIPE_RESPUESTA = "respuesta_pipe" + to_string(jugador_id);
+    
+
+
+
     cout << "Jugador " << jugador_id << " está moviéndose." << endl;
     sleep(rand() % 7 + 1);  // Simula el tiempo de la música
 
+
+
+
+
+
+
+
     // Generar un voto aleatorio por otro jugador (evitar auto-voto)
-    int voto = -1;
-    while (voto == jugador_id) {
-        voto = rand() % total_jugadores;
-    }
+  
+
+       int voto = rand() % total_jugadores ;
+   
+    cout << "Jugador " << jugador_id << " ha votado por el jugador " << voto << "." << endl;
 
     // Enviar el voto al observador a través del pipe
-    int fd_voto = open(PIPE_VOTO, O_WRONLY);
+    int fd_voto = open(PIPE_VOTO.c_str(), O_WRONLY | O_NONBLOCK);
     if (fd_voto == -1) {
         cout << "Error al abrir el pipe para enviar el voto" << endl;
         exit(EXIT_FAILURE);
     }
 
     // Enviar el voto
-    char mensaje_voto[256];
-    snprintf(mensaje_voto, sizeof(mensaje_voto), "Jugador %d vota por Jugador %d", jugador_id, voto);
-    write(fd_voto, mensaje_voto, strlen(mensaje_voto) + 1);
+    write(fd_voto, &voto, sizeof(voto));
     close(fd_voto);
 
     // Recibir la respuesta del observador
-    int fd_respuesta = open(PIPE_RESPUESTA, O_RDONLY);
+    int fd_respuesta = open(PIPE_RESPUESTA.c_str(), O_RDONLY | O_NONBLOCK);
     if (fd_respuesta == -1) {
         cout << "Error al abrir el pipe para recibir la respuesta" << endl;
         exit(EXIT_FAILURE);
